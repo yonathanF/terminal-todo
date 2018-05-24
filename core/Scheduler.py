@@ -19,6 +19,9 @@ def linear_priority_function(due_date, priority_level, fake_bost=0):
 
 
 class Scheduler:
+    def __init__(self):
+        self.tasks = list()
+
     def calculate_relative_priority(
             self, priority_function=linear_priority_function):
         '''
@@ -26,6 +29,10 @@ class Scheduler:
         The function defaults to a a linear function, as a sane option.
         '''
         pass
+
+    def add_task(self, task):
+        ''' adds a given task to the schedule '''
+        self.tasks.append(task)
 
     def save_to_file(self, task, todo_file='../data/todo.txt/'):
         '''
@@ -36,8 +43,9 @@ class Scheduler:
         todo_list = open(todo_file, 'a')
 
         # get the basic info
-        csv = task.title + ', ' + str(task.due_date) + ', ' + str(
-            task.creation_date) + ', ' + str(task.priority_level.name) + ', '
+        csv = task.id + ', ' + task.title + ', ' + str(
+            task.due_date) + ', ' + str(task.creation_date) + ', ' + str(
+                task.priority_level.name) + ', '
 
         # add the tags and projects
         for tag in task.tags:

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from core.Task import Priority, Task
+from core.Task import Priority, Task, convert_to_datetime
 
 
 class CreateSaveTest(TestCase):
@@ -20,3 +20,8 @@ class CreateSaveTest(TestCase):
         self.assertTrue('tag2' in task_string)
         self.assertTrue('project 1' in task_string)
         self.assertTrue('high' in task_string)
+
+    def test_time_converted_weekdays(self):
+        ''' tests the time converter '''
+
+        mon = convert_to_datetime('mon')

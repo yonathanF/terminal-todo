@@ -23,13 +23,19 @@ class Priority(Enum):
 
 def convert_to_datetime(string_date):
     ''' takes a string date and returns an equivalent datetime object '''
-    pass
+
+    today = datetime.today()
+    day = today.weekday()
+    month = today.month
+
+    return str(month)
 
 
 class Task:
     ''' the main task class, see description above '''
 
     def __init__(self, title, due_date, priority_level, tags, projects):
+        self.id = -1
         self.title = title
         self.due_date = due_date
         self.tags = tags
@@ -39,8 +45,9 @@ class Task:
 
     def __str__(self):
         ''' prints the task in a nice format'''
-        string = self.title + "\t" + str(self.due_date) + "\t" + str(
-            self.creation_date) + "\t" + str(self.priority_level.name) + "\t"
+        string = str(self.id) + "\t" + self.title + "\t" + str(
+            self.due_date) + "\t" + str(self.creation_date) + "\t" + str(
+                self.priority_level.name) + "\t"
 
         # add the tags and projects
         for tag in self.tags:
