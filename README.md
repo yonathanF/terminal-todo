@@ -1,2 +1,3 @@
-# terminal-todo
-A terminal based todo manager
+# Term-Todoist: A Terminal Client for Todoist 
+
+A simple terminal client for Todoist written in pure python 
