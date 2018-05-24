@@ -3,24 +3,56 @@ Handles OAuth with Todoist. It will store the token in a json file once the proc
 is completed.
 '''
 
-import uuid
 import webbrowser
 
 import requests
 
-# api info
-CLIENT_ID = "9662f098a73140eebc7f1fdb9efac61f"
-CLIENT_SECRET = "df93a09ff8ec49b8beba8e6a8e23f5f6"
-AUTH_URL = "https://todoist.com/oauth/authorize"
-TOKEN_URL = "https://todoist.com/oauth/access_token"
+from config import *
 
 
-def get_token(code, state):
+def write_token_to_file(token, token_filename=".token"):
+    '''
+    Saves the token of the user to disk for later uses
+    '''
+
+    if not token:
+        raise Exception("Token is empty")
+
+    with open(token_filename, 'w') as token_file:
+        token_file.write(token + "\n")
+
+
+def load_token_from_file(token_filename=".token"):
+    '''
+    Reads in the token from file once the auth process is completed
+    for subsquent reuses
+    '''
+
+    with open(token_filename, 'r') as token_file:
+        token = token_file.readline()
+
+    if token:
+        return token
+
+    raise Exception("You need to authenticate at least once")
+
+
+def get_token(code):
     '''
     Exchanges the code for a token. Step 2 of 2.
     '''
-    # uuid for state
-    state = uuid.uuid4().hex
+    # required data
+    data = {
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "code": code
+    }
+
+    # make the request
+    token_request = requests.post(TOKEN_URL, data)
+    token = token_request.json()['access_token']
+
+    return token
 
 
 def get_code(state):
@@ -29,7 +61,7 @@ def get_code(state):
     https://developer.todoist.com/sync/v7/#oauth
     '''
 
-    # permissions
+    # permissions, request everything
     scope = "task:add, data:read, data:read_write, data:delete,\
             data:delete, project:delete"
 
@@ -39,5 +71,8 @@ def get_code(state):
     # open the auth link in the default browser
     webbrowser.open(AUTH_URL + data)
 
+    # get the code and state from the user
+    code = input("Enter the code: ")
+    check_state = input("Enter the state: ")
 
-get_code("234")
+    return code, check_state
