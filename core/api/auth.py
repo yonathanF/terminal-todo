@@ -16,7 +16,7 @@ def write_token_to_file(token, token_filename=".token"):
     '''
 
     if not token:
-        raise Exception("Token is empty")
+        raise Exception("Token is empty. Try going through the OAuth again.")
 
     with open(token_filename, 'w') as token_file:
         token_file.write(token + "\n")
@@ -50,8 +50,9 @@ def get_token(code):
 
     # make the request
     token_request = requests.post(TOKEN_URL, data)
-    token = token_request.json()['access_token']
 
+    # extract token from response
+    token = token_request.json()['access_token']
     return token
 
 
