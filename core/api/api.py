@@ -53,7 +53,17 @@ class API:
         Also used for reverse lookup from id to name.
         '''
 
-        raise NotImplementedError()
+        # make a request for all labels
+        # returns name, id, order
+        labels_request = requests.get(
+            self.api_url + "/labels", headers=self.header)
+
+        # convert it to a dict
+        labels_dict = json.loads(labels_request.json())
+
+        # iterate through it and create the mapping
+        for label in labels_dict:
+            self.labels[label['id']] = label['name']
 
     def get_task(self, task_id):
         '''
