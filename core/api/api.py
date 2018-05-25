@@ -105,17 +105,26 @@ class API:
 
         return task
 
+    def label_name_to_id(self, label_name):
+        '''
+        Takes in a label name and returns the id
+        '''
+        # convert the label name to id
+        label_id = -1
+        for label in self.labels:
+            if self.labels[label] == label_name:
+                label_id = label
+
+        return label_id
+
     def get_tasks_by_label(self, label_name):
         '''
         Takes in a label name and returns all tasks with that label
         associated with them. Note that it take a label name not id
         '''
 
-        # convert the label name to id
-        label_id = -1
-        for label in self.labels:
-            if self.labels[label] == label_name:
-                label_id = label
+        # convert the name to id
+        label_id = self.label_name_to_id(label_name)
 
         # see if we found the id, exit if not
         if label_id < 0:
