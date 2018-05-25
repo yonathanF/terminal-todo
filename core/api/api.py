@@ -65,17 +65,11 @@ class API:
         for label in labels_dict:
             self.labels[label['id']] = label['name']
 
-    def get_task(self, task_id):
+    def convert_task(self, task_json):
         '''
-        Gets a task by the id
+        Takes in a task in a json format and returns a
+        named tuple with all ids converted to human readable names
         '''
-
-        # make a request for the resources
-        task_request = requests.get(
-            self.api_url + "/tasks/" + task_id, headers=self.header)
-
-        # get the data as a json
-        task_json = json.loads(task_request.json())
 
         # get task project name using pre populated dict
         task_project = self.projects[task_json["project_id"]]
@@ -91,5 +85,22 @@ class API:
         task = Task(task_project, task_json["content"],
                     task_json["due"]["string"], task_json["indent"],
                     task_json["priority"], task_labels, task_json["completed"])
+
+        return task
+
+    def get_task(self, task_id):
+        '''
+        Gets a task by the id
+        '''
+
+        # make a request for the resources
+        task_request = requests.get(
+            self.api_url + "/tasks/" + task_id, headers=self.header)
+
+        # get the data as a json
+        task_json = json.loads(task_request.json())
+
+        # convert it to a named tuple
+        task = self.convert_task(task_json)
 
         return task
