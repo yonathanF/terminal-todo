@@ -104,3 +104,41 @@ class API:
         task = self.convert_task(task_json)
 
         return task
+
+    def get_tasks_by_label(self, label_name):
+        '''
+        Takes in a label name and returns all tasks with that label
+        associated with them. Note that it take a label name not id
+        '''
+
+        # convert the label name to id
+        label_id = -1
+        for label in self.labels:
+            if self.labels[label] == label_name:
+                label_id = label
+
+        # see if we found the id, exit if not
+        if label_id < 0:
+            print("Couldn't find that label name")
+            return
+
+        # make a request for all tasks with this label
+        tasks_request = requests.get(
+            self.api_url + "/tasks",
+            params={
+                "label_id": label_id
+            },
+            headers=self.header).json()
+
+        # convert it to a dict for safety?
+        tasks_list = json.loads(tasks_request)
+
+        tasks = []
+        for task in tasks_list:
+            # convert it to a named tuple
+            task = self.convert_task(task)
+
+            # add it to the ongoing list of such tasks
+            tasks.append(task)
+
+        return tasks
