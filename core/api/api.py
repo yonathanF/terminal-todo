@@ -1,8 +1,9 @@
 '''
-A set of functions that wrap around the Todoist Rest API
-It provides a function for every endpoint [hopefully
+A wrapper for the Todoist Rest API to avoid coupling
+It provides a function for every endpoint [hopefully]
 '''
 
+import json
 from collections import namedtuple
 
 import requests
@@ -25,13 +26,25 @@ class API:
         self.api_url = api_url
         self.projects = self.get_project_names()
         self.labels = self.get_label_names()
+        self.header = {"Authorization": "Bearer %s" % self.token}
 
     def get_project_names(self):
         '''
         Iterates through all the projects and forms a dictionary
         of id to project name. Used for later to map in reverse direction
         '''
-        raise NotImplementedError()
+
+        # make a request for all projects
+        # returns name, id, order, indent, etc
+        projects_request = requests.get(
+            self.api_url + "/projects", headers=self.header)
+
+        # convert it to a dict
+        projects_dict = json.loads(projects_request.json())
+
+        # iterate through it and create the mapping
+        for project in projects_dict:
+            self.projects[project['id']] = project['name']
 
     def get_label_names(self):
         '''
@@ -49,13 +62,10 @@ class API:
 
         # make a request for the resources
         task_request = requests.get(
-            self.api_url + "/tasks/" + task_id,
-            headers={
-                "Authorization": "Bearer %s" % self.token
-            })
+            self.api_url + "/tasks/" + task_id, headers=self.header)
 
         # get the data as a json
-        task_json = task_request.json()
+        task_json = json.loads(task_request.json())
 
         # get task project name using pre populated dict
         task_project = self.projects[task_json["project_id"]]
